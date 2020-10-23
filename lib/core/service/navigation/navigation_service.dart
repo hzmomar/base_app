@@ -1,27 +1,51 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
-// ignore: avoid_classes_with_only_static_members
 class NavigationService {
-  static final navigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _navigationKey = GlobalKey<NavigatorState>();
 
-  static NavigatorState get navigatorState => navigatorKey.currentState;
+  GlobalKey<NavigatorState> get navigationKey => _navigationKey;
 
-  static Future<T> pushAndRemoveUntil<T extends Object>(
-      String pushNamed, String removeUntilNamed,
-      {Object arguments}) async {
-    return navigatorState.pushNamedAndRemoveUntil(
-      pushNamed,
-      ModalRoute.withName(removeUntilNamed),
-      arguments: arguments,
-    );
+  void pop({dynamic result}) {
+    return _navigationKey.currentState.pop(result);
   }
 
-  static Future<T> pushReplacementNamed<T extends Object, TO extends Object>(
-    String routeName, {
-    TO result,
-    Object arguments,
-  }) {
-    return navigatorState.pushReplacementNamed(routeName,
-        result: result, arguments: arguments);
+  Future<dynamic> navigateTo(String routeName, {dynamic arguments}) {
+    return _navigationKey.currentState
+        .pushNamed(routeName, arguments: arguments);
+  }
+
+  /// if removeUntilNamed is null,
+  /// remove all screen and make [pushNamed] screen become root
+  Future<dynamic> pushAndRemoveUntil(String pushNamed,
+      {String removeUntilNamed, Object arguments}) async {
+    if (removeUntilNamed != null) {
+      return _navigationKey.currentState.pushNamedAndRemoveUntil(
+        pushNamed,
+        ModalRoute.withName(removeUntilNamed),
+        arguments: arguments,
+      );
+    } else {
+      return _navigationKey.currentState.pushNamedAndRemoveUntil(
+        pushNamed,
+            (route) => false,
+        arguments: arguments,
+      );
+    }
+  }
+
+  void popUntil({String popUntilNamed}) {
+    if (popUntilNamed != null) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        _navigationKey.currentState
+            .popUntil(ModalRoute.withName(popUntilNamed));
+      });
+    } else {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        _navigationKey.currentState.popUntil((route) => route.isFirst);
+      });
+    }
   }
 }
+
+final NavigationService navigationService = NavigationService();

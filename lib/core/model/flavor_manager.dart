@@ -7,7 +7,7 @@ class FlavorSettings {
     @required this.baseUrl,
   });
 
-  final Map<DeployCountry, String> baseUrl;
+  final Uri baseUrl;
 }
 
 class FlavorManager {

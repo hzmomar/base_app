@@ -12,7 +12,7 @@ void main() {
   setupLocator();
   FlavorManager(
     env: AppEnvironment.dev,
-    settings: FlavorSettings(baseUrl: {DeployCountry.my: ''}),
+    settings: FlavorSettings(baseUrl: Uri.https('example.com', '/api')),
   );
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,

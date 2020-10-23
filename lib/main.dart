@@ -1,5 +1,7 @@
-import 'package:base_app/core/service/localization/get_localization.dart';
 import 'package:base_app/core/service/localization/localization_service.dart';
+import 'package:base_app/core/service/navigation/nav_router.dart';
+import 'package:base_app/core/service/navigation/navigation_service.dart';
+import 'package:base_app/ui/view/splash/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -18,19 +20,11 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      onGenerateRoute: NavRouter.generateRoute,
+      navigatorKey: navigationService.navigationKey,
       supportedLocales: localizationService.supportedLocales(),
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(getLocalization.appTitle),
-      ),
+      home: SplashView(),
+      initialRoute: NavRouter.initialRoute,
     );
   }
 }
